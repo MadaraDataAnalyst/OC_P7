@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/Madara/Documents/OC/OC_P7/mlruns/0/61701f2b5b904a93a9228cab04966cd2/artifacts
+end_time: 1696064978572
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 61701f2b5b904a93a9228cab04966cd2
+run_name: LGBMClassifier_V2
+run_uuid: 61701f2b5b904a93a9228cab04966cd2
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1696062473310
+status: 3
+tags: []
+user_id: Madara
