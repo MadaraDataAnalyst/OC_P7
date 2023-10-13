@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/Madara/Documents/OC/OC_P7/mlruns/0/af9314398de64e4d90327ab266161a1e/artifacts
+end_time: 1697183559143
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: af9314398de64e4d90327ab266161a1e
+run_name: BayesianClassifier
+run_uuid: af9314398de64e4d90327ab266161a1e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1697183522603
+status: 3
+tags: []
+user_id: Madara

@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/Users/Madara/Documents/OC/OC_P7/mlruns/0/c807f22c2a864124ab36adc4dc0f2f3c/artifacts
+end_time: 1697197636101
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: c807f22c2a864124ab36adc4dc0f2f3c
+run_name: LogisticRegression
+run_uuid: c807f22c2a864124ab36adc4dc0f2f3c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1697197507006
+status: 3
+tags: []
+user_id: Madara
