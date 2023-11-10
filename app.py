@@ -1,15 +1,10 @@
-#uvicorn app:app --reload
-
-from fastapi import FastAPI
+from flask import Flask, request, jsonify
 import pickle
 import pandas as pd
-import uvicorn
-import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
 
-# Create the app object
-app = FastAPI()
+# Create the Flask app object
+app = Flask(__name__)
 
 # Load the model
 with open('C:/Users/Madara/Documents/OC/OC_P7/pipeline_LGBM.pkl', 'rb') as model_file:
@@ -19,14 +14,16 @@ with open('C:/Users/Madara/Documents/OC/OC_P7/pipeline_LGBM.pkl', 'rb') as model
 client_data = pd.read_csv('C:/Users/Madara/Documents/OC/OC_P7/df_V1_T.csv')
 
 # Function returning all client IDs
-@app.get("/client_list")
+@app.route("/client_list", methods=["GET"])
 def load_client_id_list():
     id_list = client_data["SK_ID_CURR"].tolist()
-    return id_list
+    return jsonify(id_list)
 
-# Function returning client data 
-@app.get("/client_data")
-def get_client_data(SK_ID_CURR: int):
+# Function returning client data
+@app.route("/client_data", methods=["GET"])
+def get_client_data():
+    SK_ID_CURR = int(request.args.get("SK_ID_CURR"))
+
     # Filter the client data for the specific SK_ID_CURR
     client_row = client_data[client_data['SK_ID_CURR'] == SK_ID_CURR]
 
@@ -37,11 +34,13 @@ def get_client_data(SK_ID_CURR: int):
         if isinstance(value, float):
             client_info[key] = str(value)
 
-    return client_info
+    return jsonify(client_info)
 
 # Function returning, for a given client, the probability for defaulting
-@app.get("/predict_default")
-def predict_default(SK_ID_CURR: int):
+@app.route("/predict_default", methods=["GET"])
+def predict_default():
+    SK_ID_CURR = int(request.args.get("SK_ID_CURR"))
+
     # Filter the client data for the specific SK_ID_CURR
     client_row = client_data[client_data['SK_ID_CURR'] == SK_ID_CURR]
 
@@ -51,11 +50,13 @@ def predict_default(SK_ID_CURR: int):
     # Make the prediction
     prediction = model.predict_proba(client_features)[:, 1].item()
 
-    return {"SK_ID_CURR": SK_ID_CURR, "default_probability": prediction}
+    return jsonify({"SK_ID_CURR": SK_ID_CURR, "default_probability": prediction})
 
 # Function returning, for a given client, the label for defaulting
-@app.get("/predict_label")
-def predict_label(SK_ID_CURR: int):
+@app.route("/predict_label", methods=["GET"])
+def predict_label():
+    SK_ID_CURR = int(request.args.get("SK_ID_CURR"))
+
     # Filter the client data for the specific SK_ID_CURR
     client_row = client_data[client_data['SK_ID_CURR'] == SK_ID_CURR]
 
@@ -65,8 +66,8 @@ def predict_label(SK_ID_CURR: int):
     # Make the prediction
     prediction = model.predict(client_features).item()  # Use `model.predict` to get the label
 
-    return {"SK_ID_CURR": SK_ID_CURR, "predict_label": prediction}
-    
-# Run the API with uvicorn. Will run on http://127.0.0.1:8000
+    return jsonify({"SK_ID_CURR": SK_ID_CURR, "predict_label": prediction})
+
+# Run the Flask app
 if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=8000)
+    app.run(host='127.0.0.1', port=8000, debug=True)

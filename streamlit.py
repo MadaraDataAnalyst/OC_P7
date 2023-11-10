@@ -16,25 +16,27 @@ st.set_page_config(layout="wide")
 
 # Title and subtitle
 st.title("Prêt à dépenser - Default risk calculator Dashboard")
-st.write("Prêt à dépenser's app assesses loan applicants' creditworthiness and predicts the likelihood (in %) of loan default. It also allows you to view personal data of a selected client and compare it with others for transparent credit decisions.")
+st.write(
+    "Prêt à dépenser's app assesses loan applicants' creditworthiness and predicts the likelihood (in %) of loan default. It also allows you to view personal data of a selected client and compare it with others for transparent credit decisions."
+)
 
-# API URL
+# API URL for Flask
 API_BASE_URL = "http://127.0.0.1:8000"
 
-# Function to fetch data from the API 
+# Function to fetch data from the Flask API
 def fetch_data_from_api(endpoint, params=None):
     response = requests.get(f"{API_BASE_URL}/{endpoint}", params=params)
     return response.json()
 
 # Load trained model
-LGBM_model = joblib.load('C:/Users/Madara/Documents/OC/OC_P7/LGBMClassifier_V2_model.pkl')
+LGBM_model = joblib.load("C:/Users/Madara/Documents/OC/OC_P7/LGBMClassifier_V2_model.pkl")
 
 # Load the DataFrame containing the client data (df_V1_T)
-df = pd.read_csv('C:/Users/Madara/Documents/OC/OC_P7/df_V1_T.csv')
-df = df.drop(['TARGET'], axis=1)
+df = pd.read_csv("C:/Users/Madara/Documents/OC/OC_P7/df_V1_T.csv")
+df = df.drop(["TARGET"], axis=1)
 
 # Load SHAP values
-shap_values = joblib.load('C:/Users/Madara/Documents/OC/OC_P7/shap_values.pkl')
+shap_values = joblib.load("C:/Users/Madara/Documents/OC/OC_P7/shap_values.pkl")
 
 ############## FUNCTIONS
 
@@ -60,20 +62,20 @@ def plot_risk(proba, threshold=50, max_val=100):
     ))
 
     # Update layout for better appearance and accessibility
-    fig.update_layout(paper_bgcolor="white", font={'color': "rgb(51, 51, 51)"})
+    fig.update_layout(paper_bgcolor="white", font={"color": "rgb(51, 51, 51)"})
 
     return fig
 
 ############## SIDEBAR
 
 # Insert logo
-image = Image.open('C:/Users/Madara/Documents/OC/OC_P7/LOGO.png')
+image = Image.open("C:/Users/Madara/Documents/OC/OC_P7/LOGO.png")
 st.sidebar.image(image)
 
 # Sidebar to input user's client ID
 st.sidebar.title("Client Selection")
 
-# Fetch client IDs from the API
+# Fetch client IDs from the Flask API
 client_ids = fetch_data_from_api("client_list")
 
 # Add "Client ID" add as the default option
@@ -86,11 +88,11 @@ client_id = st.sidebar.selectbox("Select a Client ID", client_ids, index=0)
 if client_id == "Client ID":
     st.warning("Please pick a client ID from the panel on the left")
 else:
-    # Fetch the default probability prediction from the API
-    prediction_data = fetch_data_from_api("predict_default", params={"SK_ID_CURR": client_id})
+    # Fetch the default probability prediction from the Flask API
+    prediction_data = fetch_data_from_api(
+        "predict_default", params={"SK_ID_CURR": client_id}
+    )
     client_score = prediction_data.get("default_probability")
-
-    class_data = fetch_data_from_api("class_label", params={"SK_ID_CURR": client_id})
 
     client_score_percentage = client_score * 100
     # Create and display the gauge chart for client_score_percentage
@@ -98,7 +100,9 @@ else:
     st.plotly_chart(fig)
 
     # Fetch the label prediction from the `/predict_label` endpoint
-    prediction_label = fetch_data_from_api("predict_label", params={"SK_ID_CURR": client_id})
+    prediction_label = fetch_data_from_api(
+        "predict_label", params={"SK_ID_CURR": client_id}
+    )
     client_label = prediction_label.get("predict_label")
 
     # Create an expander for Feature Impact on Default Risk
@@ -165,30 +169,33 @@ else:
         client_id = int(client_id)
         client_info = df[df['SK_ID_CURR'] == client_id]
 
-        # Create a dropdown to select a single feature for the histogram
+        # Create a dropdown to select a single feature for comparison
         selected_feature_comp = st.selectbox("Select a feature for comparison", list(client_info.columns))
 
-        # Create a Seaborn histogram plot with 'hue' parameter
-        plt.figure(figsize=(8, 6))
-        if selected_feature_comp in client_info:
-            # Filter the data based on the 'PREDICTED_CLASS' column (0 or 1)
-            data_class_0 = df[df['PREDICTED_CLASS'] == 0]
-            data_class_1 = df[df['PREDICTED_CLASS'] == 1]
+        col1, col2 = st.columns(2)
+        with col1:
 
-            # Plot histograms with conditional coloring using 'hue'
-            sns.histplot(data=df, x=selected_feature_comp, kde=False, bins=20, hue='PREDICTED_CLASS',  element="step", palette={0: '#2ca02c', 1: '#d62728'})
+            # Create a Seaborn histogram plot with 'hue' parameter
+            plt.figure(figsize=(8, 6))
+            if selected_feature_comp in client_info:
+                # Filter the data based on the 'PREDICTED_CLASS' column (0 or 1)
+                data_class_0 = df[df['PREDICTED_CLASS'] == 0]
+                data_class_1 = df[df['PREDICTED_CLASS'] == 1]
 
-            # Add a vertical line for the selected client
-            plt.axvline(client_info.iloc[0][selected_feature_comp], color='black', linestyle='dashed', linewidth=3, label="Selected Client")
+                # Plot histograms with conditional coloring using 'hue'
+                sns.histplot(data=df, x=selected_feature_comp, kde=False, bins=20, hue='PREDICTED_CLASS',  element="step", palette={0: '#2ca02c', 1: '#d62728'})
 
-            # Create custom legend entries with color swatches
-            import matplotlib.patches as mpatches
-            legend_handles = [
-                mpatches.Patch(color='#2ca02c', label="Approved"),
-                mpatches.Patch(color='#d62728', label="Rejected"),
-                plt.Line2D([0], [0], color='black', linestyle='dashed', linewidth=3, label="Selected Client")
-            ]
-            
-            plt.legend(handles=legend_handles)
+                # Add a vertical line for the selected client
+                plt.axvline(client_info.iloc[0][selected_feature_comp], color='black', linestyle='dashed', linewidth=3, label="Selected Client")
 
-            st.pyplot(plt)
+                # Create custom legend entries with color swatches
+                import matplotlib.patches as mpatches
+                legend_handles = [
+                    mpatches.Patch(color='#2ca02c', label="Approved"),
+                    mpatches.Patch(color='#d62728', label="Rejected"),
+                    plt.Line2D([0], [0], color='black', linestyle='dashed', linewidth=3, label="Selected Client")
+                ]
+                
+                plt.legend(handles=legend_handles)
+
+                st.pyplot(plt)
