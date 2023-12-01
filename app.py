@@ -33,13 +33,13 @@ file_handler.setFormatter(formatter)
 prediction_logger.addHandler(file_handler)
 
 # Load client data
-#client_data = pd.read_csv('C:/Users/Madara/Documents/OC/OC_P7/df_V1_T_small.csv')          # local
-client_data = pd.read_csv('/home/MadaraRancane/mysite/df_V1_T_small.csv')                   # web
+client_data = pd.read_csv('C:/Users/Madara/Documents/OC/OC_P7/streamlit_cloud/df_V1_T_small.csv')          # local
+#client_data = pd.read_csv('/home/MadaraRancane/mysite/df_V1_T_small.csv')                                 # web
 
 def load_model():
     # Load the model
-    #model = load('C:/Users/Madara/Documents/OC/OC_P7/LGBMClassifier_with_nulls_model.joblib')                # local
-    model = load('/home/MadaraRancane/mysite/LGBMClassifier_with_nulls_model.joblib')                         # web
+    model = load('C:/Users/Madara/Documents/OC/OC_P7/LGBMClassifier_with_nulls_model.joblib')                # local
+    #model = load('/home/MadaraRancane/mysite/LGBMClassifier_with_nulls_model.joblib')                       # web
     return model
 
 # Function returning all client IDs
@@ -106,5 +106,5 @@ def predict_label():
 
 # Run the Flask app
 if __name__ == '__main__':
-   #app.run(host='127.0.0.1', port=8000, debug=True)                                     # local
-   app.run(debug=True)                                                                   # web
+   app.run(host='127.0.0.1', port=8000, debug=True)                                       # local
+   #app.run(debug=True)                                                                   # web
