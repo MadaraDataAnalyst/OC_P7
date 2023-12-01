@@ -73,7 +73,7 @@ def plot_risk(proba, threshold=50, max_val=100):
 ############## SIDEBAR
 
 # Insert logo
-image = Image.open("C:/Users/Madara/Documents/OC/OC_P7/LOGO.png")
+image = Image.open("LOGO.png")
 st.sidebar.image(image)
 
 # Sidebar to input user's client ID
