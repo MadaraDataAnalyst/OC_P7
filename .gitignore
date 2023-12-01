@@ -1,6 +1,5 @@
 /*.csv
 .ipynb_checkpoints/
-*.png
 mlruns/
 __pycache__/
 .pytest_cache/
