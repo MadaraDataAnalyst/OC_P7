@@ -21,7 +21,8 @@ st.write(
 )
 
 # API URL for Flask
-API_BASE_URL = "http://127.0.0.1:8000"
+#API_BASE_URL = "http://127.0.0.1:8000"
+API_BASE_URL = 'https://madararancane.eu.pythonanywhere.com'
 
 # Function to fetch data from the Flask API
 def fetch_data_from_api(endpoint, params=None):
@@ -29,7 +30,7 @@ def fetch_data_from_api(endpoint, params=None):
     return response.json()
 
 # Load trained model
-LGBM_model = joblib.load("C:/Users/Madara/Documents/OC/OC_P7/LGBMClassifier_V2_model.pkl")
+LGBM_model = joblib.load("C:/Users/Madara/Documents/OC/OC_P7/LGBMClassifier_with_nulls_model.joblib")
 
 # Load the DataFrame containing the client data (df_V1_T)
 df = pd.read_csv("C:/Users/Madara/Documents/OC/OC_P7/df_V1_T.csv")
