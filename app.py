@@ -1,17 +1,46 @@
 from flask import Flask, request, jsonify
-import pickle
+from joblib import load
 import pandas as pd
-import numpy as np
+import os
+#import pkg_resources
+import logging
+import logging.handlers
+
+# Configure the root logger to print messages to the console
+logging.basicConfig(level=logging.INFO)
+
+#joblibversion = pkg_resources.get_distribution("joblib").version
+#print(f"joblib version %r" % (joblibversion))
+
+os.environ["LOKY_MAX_CPU_COUNT"] = "1"
 
 # Create the Flask app object
 app = Flask(__name__)
 
-# Load the model
-with open('C:/Users/Madara/Documents/OC/OC_P7/pipeline_LGBM.pkl', 'rb') as model_file:
-    model = pickle.load(model_file)
+# Create a separate logger for predictions
+prediction_logger = logging.getLogger('prediction_logger')
+prediction_logger.setLevel(logging.INFO)
+
+# Create a file handler and set the log file
+log_file = 'predictions.log'
+file_handler = logging.FileHandler(log_file)
+
+# Create a formatter and add it to the handler
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+
+# Add the file handler to the prediction logger
+prediction_logger.addHandler(file_handler)
 
 # Load client data
-client_data = pd.read_csv('C:/Users/Madara/Documents/OC/OC_P7/df_V1_T.csv')
+#client_data = pd.read_csv('C:/Users/Madara/Documents/OC/OC_P7/df_V1_T_small.csv')          # local
+client_data = pd.read_csv('/home/MadaraRancane/mysite/df_V1_T_small.csv')                   # web
+
+def load_model():
+    # Load the model
+    #model = load('C:/Users/Madara/Documents/OC/OC_P7/LGBMClassifier_with_nulls_model.joblib')                # local
+    model = load('/home/MadaraRancane/mysite/LGBMClassifier_with_nulls_model.joblib')                         # web
+    return model
 
 # Function returning all client IDs
 @app.route("/client_list", methods=["GET"])
@@ -47,8 +76,13 @@ def predict_default():
     # Extract the features for prediction
     client_features = client_row.drop(columns=['TARGET'])
 
+    model = load_model()
+
     # Make the prediction
     prediction = model.predict_proba(client_features)[:, 1].item()
+
+    # Log the prediction
+    prediction_logger.info(f"Prediction for SK_ID_CURR {SK_ID_CURR}: {prediction}")
 
     return jsonify({"SK_ID_CURR": SK_ID_CURR, "default_probability": prediction})
 
@@ -63,6 +97,8 @@ def predict_label():
     # Extract the features for prediction
     client_features = client_row.drop(columns=['TARGET'])
 
+    model = load_model()
+
     # Make the prediction
     prediction = model.predict(client_features).item()  # Use `model.predict` to get the label
 
@@ -70,4 +106,5 @@ def predict_label():
 
 # Run the Flask app
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=8000, debug=True)
+   #app.run(host='127.0.0.1', port=8000, debug=True)                                     # local
+   app.run(debug=True)                                                                   # web
