@@ -30,14 +30,17 @@ def fetch_data_from_api(endpoint, params=None):
     return response.json()
 
 # Load trained model
-LGBM_model = joblib.load("C:/Users/Madara/Documents/OC/OC_P7/LGBMClassifier_with_nulls_model.joblib")
+#LGBM_model = joblib.load("C:/Users/Madara/Documents/OC/OC_P7/LGBMClassifier_with_nulls_model.joblib")  #local
+LGBM_model = load('/home/MadaraRancane/mysite/LGBMClassifier_with_nulls_model.joblib')                  #web
 
 # Load the DataFrame containing the client data (df_V1_T)
-df = pd.read_csv("C:/Users/Madara/Documents/OC/OC_P7/df_V1_T.csv")
+#df = pd.read_csv("C:/Users/Madara/Documents/OC/OC_P7/df_V1_T.csv")                                     #local
+df = pd.read_csv('/home/MadaraRancane/mysite/df_V1_T_small.csv')                                        #web
 df = df.drop(["TARGET"], axis=1)
 
 # Load SHAP values
-shap_values = joblib.load("C:/Users/Madara/Documents/OC/OC_P7/shap_values.pkl")
+#shap_values = joblib.load("C:/Users/Madara/Documents/OC/OC_P7/shap_values.pkl")                        #local
+shap_values = joblib.load('/home/MadaraRancane/mysite/shap_values.pkl')                                 #web
 
 ############## FUNCTIONS
 
