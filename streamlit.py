@@ -36,7 +36,6 @@ LGBM_model = joblib.load('LGBMClassifier_with_nulls_model.joblib')
 # Load the DataFrame containing the client data (df_V1_T)
 #df = pd.read_csv("C:/Users/Madara/Documents/OC/OC_P7/df_V1_T.csv")                                     #local
 df = pd.read_csv('streamlit_cloud/df_V1_T_small.csv')                                        
-df = df.drop(["TARGET"], axis=1)
 
 # Load SHAP values
 #shap_values = joblib.load("C:/Users/Madara/Documents/OC/OC_P7/shap_values.pkl")                        #local
